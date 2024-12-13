@@ -1,0 +1,41 @@
+// app.js
+
+app.get('/employees', (req, res) => {
+  const sql = 'SELECT * FROM employees';
+  db.query(sql, (err, results) => {
+    if (err) throw err;
+    res.json(results);
+  });
+});
+
+
+
+index.html
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Employee List</title>
+</head>
+<body>
+  <h1>Employee List</h1>
+  <ul id="employeeList"></ul>
+  <script>
+    async function fetchEmployees() {
+      const response = await fetch('http://localhost:3000/employees');
+      const employees = await response.json();
+      const employeeList = document.getElementById('employeeList');
+      employees.forEach((employee) => {
+        const li = document.createElement('li');
+        li.textContent = `${employee.name} - ${employee.designation} - ${employee.salary} - ${employee.department}`;
+        employeeList.appendChild(li);
+      });
+    }
+
+    fetchEmployees();
+  </script>
+</body>
+</html>
