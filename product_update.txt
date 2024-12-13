@@ -1,0 +1,62 @@
+// app.js
+
+
+app.put('/products/:id', (req, res) => {
+  const { id } = req.params;
+  const { stock, price } = req.body;
+
+  const sql = 'UPDATE products SET stock = ?, price = ? WHERE id = ?';
+  db.query(sql, [stock, price, id], (err) => {
+    if (err) throw err;
+    res.json({ message: 'Product updated successfully' });
+  });
+});
+
+
+
+
+index.html
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Update Product</title>
+</head>
+<body>
+  <h1>Update Product</h1>
+  <form id="updateProductForm">
+    <label>
+      Product ID:
+      <input type="number" id="productId" required />
+    </label>
+    <label>
+      New Stock:
+      <input type="number" id="stock" required />
+    </label>
+    <label>
+      New Price:
+      <input type="number" id="price" required />
+    </label>
+    <button type="submit">Update Product</button>
+  </form>
+  <script>
+    document.getElementById('updateProductForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const response = await fetch(`http://localhost:3000/products/${document.getElementById('productId').value}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          stock: document.getElementById('stock').value,
+          price: document.getElementById('price').value,
+        }),
+      });
+      const result = await response.json();
+      alert(result.message || result.error);
+    });
+  </script>
+</body>
+</html>

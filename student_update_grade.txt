@@ -1,0 +1,57 @@
+// app.js
+
+
+
+app.put('/students/:rollNumber', (req, res) => {
+  const { rollNumber } = req.params;
+  const { grade } = req.body;
+
+  const sql = 'UPDATE students SET grade = ? WHERE rollNumber = ?';
+  db.query(sql, [grade, rollNumber], (err) => {
+    if (err) throw err;
+    res.json({ message: 'Student grade updated successfully' });
+  });
+});
+
+
+
+
+//index.html
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Update Student Grade</title>
+</head>
+<body>
+  <h1>Update Student Grade</h1>
+  <form id="updateStudentForm">
+    <label>
+      Roll Number:
+      <input type="number" id="rollNumber" required />
+    </label>
+    <label>
+      New Grade:
+      <input type="text" id="grade" required />
+    </label>
+    <button type="submit">Update Grade</button>
+  </form>
+  <script>
+    document.getElementById('updateStudentForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const response = await fetch(`http://localhost:3000/students/${document.getElementById('rollNumber').value}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          grade: document.getElementById('grade').value,
+        }),
+      });
+      const result = await response.json();
+      alert(result.message || result.error);
+    });
+  </script>
+</body>
+</html>

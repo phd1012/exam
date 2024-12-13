@@ -1,0 +1,65 @@
+// app.js
+
+
+app.post('/students', (req, res) => {
+  const { name, rollNumber, class: studentClass, grade } = req.body;
+
+  const sql = 'INSERT INTO students (name, rollNumber, class, grade) VALUES (?, ?, ?, ?)';
+  db.query(sql, [name, rollNumber, studentClass, grade], (err) => {
+    if (err) throw err;
+    res.json({ message: 'Student added successfully' });
+  });
+});
+
+
+
+// index.html
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Add Student</title>
+</head>
+<body>
+  <h1>Add Student</h1>
+  <form id="studentForm">
+    <label>
+      Name:
+      <input type="text" id="name" required />
+    </label>
+    <label>
+      Roll Number:
+      <input type="number" id="rollNumber" required />
+    </label>
+    <label>
+      Class:
+      <input type="text" id="class" required />
+    </label>
+    <label>
+      Grade:
+      <input type="text" id="grade" required />
+    </label>
+    <button type="submit">Add Student</button>
+  </form>
+  <script>
+    document.getElementById('studentForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const response = await fetch('http://localhost:3000/students', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: document.getElementById('name').value,
+          rollNumber: document.getElementById('rollNumber').value,
+          class: document.getElementById('class').value,
+          grade: document.getElementById('grade').value,
+        }),
+      });
+      const result = await response.json();
+      alert(result.message || result.error);
+    });
+  </script>
+</body>
+</html>

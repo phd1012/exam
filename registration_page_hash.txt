@@ -1,0 +1,89 @@
+//index.html
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Registration</title>
+</head>
+<body>
+  <form id="registerForm">
+    <label>
+      Username:
+      <input type="text" id="username" required />
+    </label>
+    <label>
+      Email:
+      <input type="email" id="email" required />
+    </label>
+    <label>
+      Password:
+      <input type="password" id="password" required />
+    </label>
+    <label>
+      Confirm Password:
+      <input type="password" id="confirmPassword" required />
+    </label>
+    <button type="submit">Register</button>
+  </form>
+  <script>
+    document.getElementById('registerForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const response = await fetch('http://localhost:3000/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          username: document.getElementById('username').value,
+          email: document.getElementById('email').value,
+          password: document.getElementById('password').value,
+          confirmPassword: document.getElementById('confirmPassword').value,
+        }),
+      });
+      const result = await response.json();
+      alert(result.message || result.error);
+    });
+  </script>
+</body>
+</html>
+
+
+
+
+//app.js 
+
+const express = require('express');
+const mysql = require('mysql');
+const bcrypt = require('bcrypt');
+
+const app = express();
+app.use(express.json());
+
+const db = mysql.createConnection({
+  host: 'localhost',
+  user: 'root',
+  password: '',
+  database: 'mydb',
+});
+
+db.connect((err) => {
+  if (err) throw err;
+  console.log('Connected to database');
+});
+
+app.post('/register', async (req, res) => {
+  const { username, email, password, confirmPassword } = req.body;
+
+  if (password !== confirmPassword) {
+    return res.status(400).json({ error: 'Passwords do not match' });
+  }
+
+  const hashedPassword = await bcrypt.hash(password, 10);
+  const sql = 'INSERT INTO users (username, email, password) VALUES (?, ?, ?)';
+  db.query(sql, [username, email, hashedPassword], (err) => {
+    if (err) throw err;
+    res.json({ message: 'User registered successfully' });
+  });
+});
+
+app.listen(3000, () => console.log('Server running on port 3000'));

@@ -1,0 +1,46 @@
+//app.js
+
+
+app.delete('/products/:id', (req, res) => {
+  const { id } = req.params;
+
+  const sql = 'DELETE FROM products WHERE id = ?';
+  db.query(sql, [id], (err) => {
+    if (err) throw err;
+    res.json({ message: 'Product deleted successfully' });
+  });
+});
+
+
+
+index.html
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Delete Product</title>
+</head>
+<body>
+  <h1>Delete Product</h1>
+  <form id="deleteProductForm">
+    <label>
+      Product ID:
+      <input type="number" id="productId" required />
+    </label>
+    <button type="submit">Delete Product</button>
+  </form>
+  <script>
+    document.getElementById('deleteProductForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const response = await fetch(`http://localhost:3000/products/${document.getElementById('productId').value}`, {
+        method: 'DELETE',
+      });
+      const result = await response.json();
+      alert(result.message || result.error);
+    });
+  </script>
+</body>
+</html>

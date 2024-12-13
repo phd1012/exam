@@ -1,0 +1,39 @@
+// app.js
+
+app.get('/students', (req, res) => {
+  const sql = 'SELECT * FROM students';
+  db.query(sql, (err, results) => {
+    if (err) throw err;
+    res.json(results);
+  });
+});
+
+
+//index.html
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>All Students</title>
+</head>
+<body>
+  <h1>Student List</h1>
+  <ul id="studentList"></ul>
+  <script>
+    async function fetchStudents() {
+      const response = await fetch('http://localhost:3000/students');
+      const students = await response.json();
+      const studentList = document.getElementById('studentList');
+      students.forEach((student) => {
+        const li = document.createElement('li');
+        li.textContent = `${student.name} - Roll: ${student.rollNumber} - Class: ${student.class} - Grade: ${student.grade}`;
+        studentList.appendChild(li);
+      });
+    }
+
+    fetchStudents();
+  </script>
+</body>
+</html>

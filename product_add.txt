@@ -1,0 +1,72 @@
+// app.js
+
+
+app.post('/products', (req, res) => {
+  const { name, price, category, description, stock } = req.body;
+
+  const sql = 'INSERT INTO products (name, price, category, description, stock) VALUES (?, ?, ?, ?, ?)';
+  db.query(sql, [name, price, category, description, stock], (err) => {
+    if (err) throw err;
+    res.json({ message: 'Product added successfully' });
+  });
+});
+
+
+
+
+index.html
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Add Product</title>
+</head>
+<body>
+  <h1>Add Product</h1>
+  <form id="productForm">
+    <label>
+      Name:
+      <input type="text" id="name" required />
+    </label>
+    <label>
+      Price:
+      <input type="number" id="price" required />
+    </label>
+    <label>
+      Category:
+      <input type="text" id="category" required />
+    </label>
+    <label>
+      Description:
+      <textarea id="description" required></textarea>
+    </label>
+    <label>
+      Stock:
+      <input type="number" id="stock" required />
+    </label>
+    <button type="submit">Add Product</button>
+  </form>
+  <script>
+    document.getElementById('productForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const response = await fetch('http://localhost:3000/products', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: document.getElementById('name').value,
+          price: document.getElementById('price').value,
+          category: document.getElementById('category').value,
+          description: document.getElementById('description').value,
+          stock: document.getElementById('stock').value,
+        }),
+      });
+      const result = await response.json();
+      alert(result.message || result.error);
+    });
+  </script>
+</body>
+</html>

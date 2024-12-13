@@ -1,0 +1,42 @@
+// app.js
+
+app.get('/products', (req, res) => {
+  const sql = 'SELECT * FROM products';
+  db.query(sql, (err, results) => {
+    if (err) throw err;
+    res.json(results);
+  });
+});
+
+
+
+
+// index.html
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>All Products</title>
+</head>
+<body>
+  <h1>Product List</h1>
+  <ul id="productList"></ul>
+  <script>
+    async function fetchProducts() {
+      const response = await fetch('http://localhost:3000/products');
+      const products = await response.json();
+      const productList = document.getElementById('productList');
+      products.forEach((product) => {
+        const li = document.createElement('li');
+        li.textContent = `${product.name} - ${product.price} - ${product.category}`;
+        productList.appendChild(li);
+      });
+    }
+
+    fetchProducts();
+  </script>
+</body>
+</html>
